@@ -101,7 +101,7 @@ modrinth {
     versionType = "release"
     uploadFile = jar
     gameVersions = mcVersions.split(',').collect { it.trim() }
-    loaders = List.of("velocity")
+    loaders = ["velocity"]
     syncBodyFrom = file("README.md").text
 }
 

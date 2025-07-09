@@ -8,6 +8,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import io.freddi.hub.utils.*;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -18,6 +19,7 @@ import java.nio.file.Path;
 
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 
+@SuppressWarnings("unused") // unused methods
 @Plugin(id = Props.ID, name = Props.PROJECTNAME, version = Props.VERSION, authors = Props.AUTHOR)
 public class Hub {
 
@@ -47,6 +49,7 @@ public class Hub {
             logger.error("Failed to load config!", e);
         }
         new CommandUtils(this);
+        new ForcedHostUtils(this, dataDirectory);
     }
 
     @Subscribe
@@ -56,13 +59,23 @@ public class Hub {
 
     @Subscribe
     public void onPlayerChooseInitialServer(PlayerChooseInitialServerEvent event) {
+        Player player = event.getPlayer();
+
         ConfigUtils configUtils = Utils.util(ConfigUtils.class);
+        ForcedHostUtils forcedHostUtils = Utils.util(ForcedHostUtils.class);
+        if (forcedHostUtils.isForcedHost(player)) {
+            MessageUtils messageUtils = Utils.util(MessageUtils.class);
+            String message = configUtils.config().systemMessages.forcedHostJoinMessage;
+            messageUtils.sendMessage(player, message);
+            messageUtils.sendDebugMessage(player,"🤖 Joining a forced host server!");
+            return;
+        }
         if (configUtils.config().autoSelect.onJoin) {
-            event.setInitialServer(Utils.util(LobbyUtils.class).findBest(event.getPlayer()).server());
+            event.setInitialServer(Utils.util(LobbyUtils.class).findBest(player).server());
         }
         UpdateChecker updateChecker = Utils.util(UpdateChecker.class);
         if (configUtils.config().updateChecker.enabled && updateChecker.updateAvailable && (configUtils.config().updateChecker.notification.isBlank() || event.getPlayer().hasPermission(configUtils.config().updateChecker.notification))) {
-            event.getPlayer().sendMessage(miniMessage().deserialize(configUtils.config().updateChecker.notification, Placeholder.parsed("current", Props.VERSION), Placeholder.parsed("latest", updateChecker.latest)));
+            player.sendMessage(miniMessage().deserialize(configUtils.config().updateChecker.notification, Placeholder.parsed("current", Props.VERSION), Placeholder.parsed("latest", updateChecker.latest)));
         }
     }
 
@@ -70,7 +83,6 @@ public class Hub {
     public void onKickedFromServer(KickedFromServerEvent event) {
         if (Utils.util(ConfigUtils.class).config().autoSelect.onServerKick)
             Utils.util(LobbyUtils.class).findBest(event.getPlayer()).connect();
-
     }
 
     public ProxyServer server() {
