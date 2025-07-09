@@ -29,7 +29,7 @@ public class ForcedHostUtils extends Utils<ForcedHostUtils> {
                 for (Map.Entry<String, Object> entry : forcedHostsToml.entrySet()) {
                     String host = entry.getKey();
                     if (host != null) {
-                        forcedHosts.add(host.toLowerCase());
+                        forcedHosts.add(host.toLowerCase().replaceAll("^\"|\"$", ""));
                     }
                 }
                 messageUtils.broadcastDebugMessage("Loaded forced hosts: " + String.join(", ",forcedHosts));
@@ -42,7 +42,6 @@ public class ForcedHostUtils extends Utils<ForcedHostUtils> {
     }
 
     public boolean isForcedHost(String host) {
-        logger.debug("Checking if host is forced: {}", host); // temporary
         return host != null && forcedHosts.contains(host.toLowerCase());
     }
 
