@@ -21,7 +21,8 @@ def execGitCommand(String command) {
 def defineTag = {
     def tagInfo = execGitCommand('git describe --tags')
     if (!tagInfo) return 'unknown'
-    def match = tagInfo =~ /^(.+?)-\d+-g[0-9a-f]{7}$/
+//    def match = tagInfo =~ /^(.+?)-\d+-g[0-9a-f]{7}$/
+    def match = tagInfo =~ /^(.+?)(?:-\d+-g[0-9a-f]{7})?$/
     return match ? match.group(1) : tagInfo
 }
 def tag = defineTag()

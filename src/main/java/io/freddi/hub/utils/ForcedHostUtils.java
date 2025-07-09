@@ -42,6 +42,7 @@ public class ForcedHostUtils extends Utils<ForcedHostUtils> {
     }
 
     public boolean isForcedHost(String host) {
+        logger.warn("Checking if host is forced: {}", host);
         return host != null && forcedHosts.contains(host.toLowerCase());
     }
 
