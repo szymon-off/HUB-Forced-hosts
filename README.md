@@ -1,5 +1,6 @@
-# ⚠️ Fork of @uebliche's [HUB](https://github.com/uebliche/HUB) plugin
-This fork introduces the capability to utilize Velocity forced hosts. Players who connect with a properly set up forced host will bypass the lobby.
+# ⚠️ Fork discontiniued
+I recommend you switch to vHubs
+Try it now on [Github](https://github.com/szymon-off/vHubs) and [Modrinth](https://modrinth.com/plugin/vhubs)
 
 <!-- modrinth_exclude.start -->
 
